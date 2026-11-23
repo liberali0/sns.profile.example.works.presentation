@@ -1,0 +1,421 @@
+<title>SNS 프로필 예시작</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<style>
+/* Layout: 휴대폰 한 대를 무대 가운데 세운 발표용 목업. 화면 안은 실제 인스타 프로필과 같은 흰 UI(단일 테마로 고정). */
+:root{
+  --stage:#ffffff; --stage2:#ffffff;
+  --ui:#ffffff; --ink:#111318; --sub:#6b6f78; --line:#e3e4e8; --btn:#eff0f3; --ph:#eceef2; --phink:#9a9ea8;
+  --blue:#2f7cf6; --cf:#22b14c; --ring1:#feda75; --ring2:#fa7e1e; --ring3:#d62976; --ring4:#962fbf;
+  --sans:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;font-family:var(--sans);color:var(--ink);background:radial-gradient(120% 90% at 20% 10%,var(--stage2),var(--stage));display:flex;align-items:center;justify-content:center;padding-block:24px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));min-height:100%}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+button:focus,button:focus-visible,[tabindex]:focus{outline:none}
+button{-webkit-tap-highlight-color:transparent}
+.phone{width:390px;max-width:100%;height:min(844px,calc(100vh - 48px));min-height:640px;background:var(--ui);border-radius:44px;box-shadow:0 0 0 10px #1b1c22,0 0 0 11px #3a3c46,0 30px 80px rgba(40,30,80,.35);position:relative;overflow:hidden;display:flex;flex-direction:column}
+.status{height:44px;flex:none;display:flex;justify-content:space-between;align-items:center;padding:0 28px;font-size:14px;font-weight:700}
+.status .r{display:flex;gap:5px;align-items:center}
+.scroll{flex:1;overflow-y:auto;scrollbar-width:none}.scroll::-webkit-scrollbar{display:none}
+.topbar{display:flex;align-items:center;gap:14px;padding:6px 16px 12px}
+.topbar .id{font-weight:700;font-size:22px;letter-spacing:-.2px;display:flex;align-items:center;gap:4px}
+.topbar .sp{flex:1}
+.topbar svg{width:26px;height:26px}
+.prof{display:flex;align-items:flex-start;gap:20px;padding:2px 16px 0}
+.avcol{display:flex;flex-direction:column;align-items:center;gap:6px;flex:none;width:100px}
+.avcol .sub{font-size:14px;text-align:center;line-height:1.3}
+.avbtn{position:relative;flex:none;width:100px;height:100px;border-radius:50%;padding:3.5px;background:conic-gradient(from 200deg,var(--ring1),var(--ring2),var(--ring3),var(--ring4),var(--ring1))}
+.avbtn.cfring{background:var(--cf)}
+.avbtn.seen{background:var(--line)}
+.avbtn .in{width:100%;height:100%;border-radius:50%;border:3.5px solid #fff;overflow:hidden}
+.pr{flex:1;min-width:0;padding-top:16px;display:flex;flex-direction:column;gap:10px}
+.pr .nm{font-weight:400;font-size:17px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);text-align:left}
+.stats b{display:block;font-size:18px;font-weight:700;font-variant-numeric:tabular-nums}
+.stats span{font-size:14px}
+.bio{padding:10px 16px 0;font-size:14px;line-height:1.45}
+.bio .cat{color:var(--sub);text-align:left}
+.bio .cat:empty{width:30%}
+.btns{display:grid;grid-template-columns:1fr 1fr 36px;gap:6px;padding:12px 16px 0}
+.btns span{background:var(--btn);border-radius:9px;text-align:center;font-weight:700;font-size:14px;padding:7px 0}
+.btns .fol{background:var(--blue);color:#fff}
+.hls{display:flex;gap:16px;padding:16px 16px 6px;overflow-x:auto}
+.hl{text-align:center;font-size:12px;width:66px;flex:none}
+.hl .c{width:64px;height:64px;border-radius:50%;border:1px solid var(--line);padding:3px;margin-bottom:5px}
+.hl .c>div{width:100%;height:100%;border-radius:50%;overflow:hidden}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--line);margin-top:8px}
+.tabs span{display:flex;justify-content:center;padding:10px 0}
+.tabs span.on{border-bottom:1.5px solid var(--ink)}
+.tabs svg{width:22px;height:22px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px}
+.grid button{aspect-ratio:1/1;overflow:hidden;position:relative}
+.nav{height:52px;flex:none;border-top:1px solid var(--line);display:flex;justify-content:space-around;align-items:center}
+.nav svg{width:25px;height:25px}
+.nav .me{width:26px;height:26px;border-radius:50%;overflow:hidden;border:1.5px solid var(--ink)}
+/* 이미지 자리 */
+.img{width:100%;height:100%;position:relative;background:var(--ph);overflow:hidden}
+.img img{width:100%;height:100%;object-fit:cover;display:block;position:relative;z-index:1}
+.img .lbl{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:var(--phink);font-size:11px;line-height:1.35;padding:4px}
+.img .lbl b{font-size:12px;color:#7d818b}
+.img.dark{background:#2a2c33}.img.dark .lbl,.img.dark .lbl b{color:#8d919c}
+.tiny .lbl{font-size:0}.tiny .lbl b{font-size:9px}
+/* 글자 자리 */
+.tx:empty{display:inline-block;min-width:60%;height:.95em;border-radius:4px;background:var(--ph);vertical-align:-1px}
+.tx.s:empty{min-width:3em}.tx.m:empty{min-width:7em}
+.dk .tx:empty{background:rgba(255,255,255,.25)}
+.stats b.tx:empty{display:block;width:3.2em;min-width:0;height:18px;margin:2px 0 3px}
+.pr .nm:empty{display:block;width:55%;min-width:0;height:17px}
+.avcol .sub:empty{display:block;width:70px;min-width:0;height:13px}
+.bio .tx:empty{display:block;height:14px;margin:5px 0}
+.bio .tx[data-t^="bio"]:empty{width:78%}
+/* story viewer */
+.holdmark{position:absolute;right:12px;top:64px;width:30px;height:30px;border-radius:50%;background:rgba(0,0,0,.45);display:flex;gap:4px;align-items:center;justify-content:center;opacity:0;transform:scale(.8);transition:opacity .2s,transform .2s;pointer-events:none;z-index:5}
+.holdmark i{width:3.5px;height:12px;border-radius:2px;background:#fff}
+.story.held .holdmark{opacity:1;transform:none}
+.story{position:absolute;inset:0;background:#000;z-index:20;display:flex;flex-direction:column;opacity:0;pointer-events:none;transform:scale(.92);transition:opacity .22s,transform .22s}
+.story.open{opacity:1;pointer-events:auto;transform:none}
+.sv{position:relative;flex:1;margin:44px 0 0;border-radius:10px;overflow:hidden}
+.sv .art{position:absolute;inset:0;background:#111}
+.sbg{position:absolute;inset:-30px;background-size:cover;background-position:center;filter:blur(22px) brightness(.7)}
+.sfg{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+.sfg.full{object-fit:cover}
+.art{container-type:size}
+.sshade{position:absolute;left:0;right:0;top:0;height:22%;background:linear-gradient(rgba(0,0,0,.38),rgba(0,0,0,.12) 55%,rgba(0,0,0,0));pointer-events:none}
+.stext{position:absolute;transform:translate(-50%,-50%);pointer-events:none;filter:drop-shadow(0 0 3px rgba(0,0,0,.55))}
+.stxt.bg{text-shadow:none;line-height:1.5}
+.stxt.bg span{background:#000;padding:.12em .45em;border-radius:.3em;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.stxt{position:absolute;transform:translate(-50%,-50%);pointer-events:none;color:#fff;font-family:"Apple SD Gothic Neo","Noto Sans KR",sans-serif;font-weight:400;white-space:pre;text-align:center;line-height:1.35;letter-spacing:-.01em;text-shadow:0 0 3px rgba(0,0,0,.55)}
+.tiny img{object-position:50% 25%}
+.bars{position:absolute;top:8px;left:8px;right:8px;display:flex;gap:4px;z-index:3}
+.bars i{flex:1;height:2.5px;background:rgba(255,255,255,.4);border-radius:2px;overflow:hidden}
+.bars i b{display:block;height:100%;width:0;background:#fff}
+.shead{position:absolute;top:18px;left:10px;right:10px;display:flex;align-items:center;gap:8px;z-index:3;color:#fff;font-size:13px;text-shadow:0 1px 3px rgba(0,0,0,.35)}
+.shead .mini{width:32px;height:32px;border-radius:50%;overflow:hidden;border:1.5px solid #fff;flex:none}
+.shead b{font-weight:700}.shead .t{opacity:.8}
+.shead .cfb{background:var(--cf);color:#fff;font-size:11px;font-weight:700;border-radius:10px;padding:2px 8px;text-shadow:none}
+.shead .x{margin-left:auto;font-size:26px;line-height:1;padding:0 4px}
+.tapL,.tapR{position:absolute;top:60px;bottom:10px;z-index:2}
+.tapL{left:0;width:35%}.tapR{right:0;width:65%}
+.sfoot{height:62px;flex:none;display:flex;align-items:center;gap:10px;padding:0 12px;color:#fff}
+.sfoot .msg{flex:1;border:1px solid rgba(255,255,255,.55);border-radius:22px;padding:10px 16px;font-size:13px;opacity:.9}
+.sfoot svg{width:24px;height:24px}
+/* post */
+.post{position:absolute;inset:0;background:var(--ui);z-index:15;display:flex;flex-direction:column;transform:translateY(100%);transition:transform .28s ease}
+.post.open{transform:none}
+.post .ph{height:44px;flex:none}
+.post .bar{display:flex;align-items:center;gap:10px;padding:6px 14px;font-weight:700;font-size:16px}
+.post .bar button{display:flex}
+.post .bar .ttl{flex:1;text-align:center;line-height:1.15}
+.post .bar .ttl small{display:block;font-size:11px;font-weight:600;color:var(--sub);text-transform:lowercase}
+.post .bar .ttl span{display:block}
+.post .body{position:relative}
+.post .uh .more{margin-left:auto;font-weight:700;font-size:18px}
+.post .pitem{padding-bottom:6px}
+.post .body{flex:1;overflow-y:auto;scrollbar-width:none}.post .body::-webkit-scrollbar{display:none}
+.post .uh{display:flex;align-items:center;gap:9px;padding:10px 14px;font-size:14px;font-weight:700}
+.post .uh .mini{width:32px;height:32px;border-radius:50%;padding:2px;background:conic-gradient(var(--ring1),var(--ring2),var(--ring3),var(--ring4),var(--ring1));flex:none}
+.post .uh .mini>div{width:100%;height:100%;border-radius:50%;overflow:hidden;border:2px solid #fff}
+.post .uh small{display:block;font-weight:400;font-size:12px;color:var(--sub)}
+.post .pimg{aspect-ratio:1/1}
+.post .acts{display:flex;gap:14px;padding:10px 14px 4px}
+.post .acts svg{width:25px;height:25px}
+.post .acts .bm{margin-left:auto}
+.post .likes{padding:0 14px;font-weight:700;font-size:14px}
+.post .cap{padding:4px 14px;font-size:14px;line-height:1.5}
+.post .cap b,.post .cm b{margin-right:5px}
+.emo{width:1.15em;height:1.15em;vertical-align:-.2em}
+.hl .emo,#sName .emo{width:1em;height:1em;margin:0 1px}
+.post .tags{color:#1d4f9a}
+.post .cm{padding:2px 14px;font-size:14px;line-height:1.5}
+.post .when{padding:6px 14px 20px;font-size:12px;color:var(--sub)}
+.like-on path{fill:#ed4956;stroke:#ed4956}
+.phone{transition:transform .7s cubic-bezier(.2,.7,.2,1)}
+body.present .phone{transform:translateX(min(24vw,380px))}
+.pnote{position:fixed;left:max(5vw,24px);top:50%;width:min(40vw,620px);transform:translate(-30px,-50%);opacity:0;pointer-events:none;transition:opacity .5s ease .25s,transform .7s cubic-bezier(.2,.7,.2,1) .15s;color:#1d1f27;z-index:5}
+body.present .pnote{opacity:1;transform:translate(0,-50%)}
+.pnote .kick{display:inline-block;font-size:15px;font-weight:700;letter-spacing:.02em;color:#fff;background:linear-gradient(90deg,#fa7e1e,#d62976,#962fbf);padding:5px 14px;border-radius:999px;margin-bottom:18px}
+.pnote h2{font-size:clamp(28px,2.6vw,44px);line-height:1.25;margin:0 0 22px;font-weight:700;letter-spacing:-.02em}
+.pnote ul{list-style:none;margin:0;padding:0;display:grid;gap:14px}
+.pnote li{font-size:clamp(17px,1.35vw,23px);line-height:1.55;padding-left:22px;position:relative;color:#2b2e38}
+.pnote li::before{content:"";position:absolute;left:0;top:.62em;width:9px;height:9px;border-radius:50%;background:#d62976}
+.pnote li b{color:#111}
+.pnote .fade{animation:pf .45s ease}
+@keyframes pf{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@media (max-width:900px){body.present .phone{transform:none}.pnote{display:none}}
+@media (max-width:460px){body{padding:0}.phone{border-radius:0;box-shadow:none;height:100vh;min-height:0;width:100%}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<aside class="pnote" id="pnote" aria-live="polite"></aside>
+<div class="phone" id="phone">
+  <div class="status"><span>9:41</span><span class="r">
+    <svg width="18" height="12" viewBox="0 0 18 12"><rect x="0" y="8" width="3" height="4" rx="1" fill="#111"/><rect x="5" y="5" width="3" height="7" rx="1" fill="#111"/><rect x="10" y="2" width="3" height="10" rx="1" fill="#111"/><rect x="15" y="0" width="3" height="12" rx="1" fill="#111"/></svg>
+    <svg width="26" height="12" viewBox="0 0 26 12"><rect x=".5" y=".5" width="22" height="11" rx="3" fill="none" stroke="#111"/><rect x="2.5" y="2.5" width="16" height="7" rx="1.5" fill="#111"/><rect x="23.5" y="4" width="2" height="4" rx="1" fill="#111"/></svg></span></div>
+
+  <div class="scroll">
+    <div class="topbar">
+      <svg viewBox="0 0 24 24"><path d="M15 4l-8 8 8 8" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="id"><span class="tx m" data-t="id"></span></span>
+      <span class="sp"></span>
+      <svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.8" fill="#111"/><circle cx="12" cy="12" r="1.8" fill="#111"/><circle cx="19" cy="12" r="1.8" fill="#111"/></svg>
+    </div>
+    <div class="prof">
+      <div class="avcol">
+        <button class="avbtn" id="avbtn" aria-label="스토리 보기"><div class="in" id="avatar"></div></button>
+      </div>
+      <div class="pr">
+        <div class="nm tx m" data-t="name"></div>
+        <div class="stats">
+          <div><b data-t="posts"></b><span>게시물</span></div>
+          <div><b class="tx s" data-t="followers"></b><span>팔로워</span></div>
+          <div><b class="tx s" data-t="following"></b><span>팔로잉</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="bio">
+      <div class="cat tx s" data-t="category"></div>
+      <div class="tx" data-t="bio1"></div>
+      <div class="tx" data-t="bio2"></div>
+      <div class="tx" data-t="bio3"></div>
+    </div>
+    <div class="btns"><span style="display:flex;align-items:center;justify-content:center;gap:4px">팔로잉<svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="#111" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span>메시지</span><span>＋</span></div>
+    <div class="hls" id="hls"></div>
+    <div class="tabs">
+      <span class="on"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" fill="none" stroke="#111" stroke-width="1.8"/><path d="M9 3v18M15 3v18M3 9h18M3 15h18" stroke="#111" stroke-width="1.8"/></svg></span>
+      <span><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="#8a8d95" stroke-width="1.8"/><path d="M10 9l5 3-5 3z" fill="#8a8d95"/></svg></span>
+      <span><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3" fill="none" stroke="#8a8d95" stroke-width="1.8"/><circle cx="12" cy="10" r="3" fill="none" stroke="#8a8d95" stroke-width="1.8"/><path d="M7 19c1-3 3-4 5-4s4 1 5 4" fill="none" stroke="#8a8d95" stroke-width="1.8"/></svg></span>
+    </div>
+    <div class="grid" id="grid"></div>
+    <div style="height:40px"></div>
+  </div>
+
+  <div class="nav">
+    <svg viewBox="0 0 24 24"><path d="M4 11l8-7 8 7v9h-5v-6H9v6H4z" fill="none" stroke="#111" stroke-width="1.9" stroke-linejoin="round"/></svg>
+    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5" fill="none" stroke="#111" stroke-width="1.9"/><path d="M16 16l4 4" stroke="#111" stroke-width="1.9" stroke-linecap="round"/></svg>
+    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="#111" stroke-width="1.9"/><path d="M12 8v8M8 12h8" stroke="#111" stroke-width="1.9" stroke-linecap="round"/></svg>
+    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="#111" stroke-width="1.9"/><path d="M10 9l5 3-5 3z" fill="#111"/></svg>
+    <div class="me" id="navme"></div>
+  </div>
+
+  <div class="post" id="post" aria-hidden="true">
+    <div class="ph"></div>
+    <div class="bar"><button id="postBack" aria-label="뒤로"><svg viewBox="0 0 24 24" width="24" height="24"><path d="M15 4l-8 8 8 8" fill="none" stroke="#111" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><div class="ttl"><span>게시물</span><small id="postId"></small></div><span style="width:24px"></span></div>
+    <div class="body" id="postBody"></div>
+  </div>
+
+  <div class="story" id="story" aria-hidden="true">
+    <div class="sv">
+      <div class="art" id="sArt"></div>
+      <div class="holdmark" id="holdMark" aria-hidden="true"><i></i><i></i></div>
+      <div class="bars" id="sBars"></div>
+      <div class="shead dk"><div class="mini" id="sMini"></div><b class="tx m" id="sName"></b><span class="t" id="sTime"></span><span id="sBadge"></span><button class="x" id="sClose" aria-label="닫기">×</button></div>
+      <button class="tapL" id="tapL" aria-label="이전"></button><button class="tapR" id="tapR" aria-label="다음"></button>
+    </div>
+    <div class="sfoot"><div class="msg">메시지 보내기</div>
+      <svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 017-2.6A4 4 0 0119 10c0 5.6-7 10-7 10z" fill="none" stroke="#fff" stroke-width="1.9"/></svg>
+      <svg viewBox="0 0 24 24"><path d="M21 4L3 11l7 2 2 7z" fill="none" stroke="#fff" stroke-width="1.9" stroke-linejoin="round"/></svg></div>
+  </div>
+</div>
+
+<script>
+/* =========================================================
+   여기만 고치면 돼요.
+   - 글: "" 안에 쓰면 그대로 나와요. 비워 두면 회색 빈칸으로 보여요.
+   - 그림: 이 html 파일 옆 images 폴더에 아래 파일 이름으로 넣으면 자동으로 들어가요.
+     (파일이 없으면 회색 칸에 규격이 표시돼요.)
+   ========================================================= */
+const CONFIG = {
+  id: "daegil.han", // 아이디
+  posts: "3",        // 게시물 수
+  followers: "108",  // 팔로워
+  following: "93",   // 팔로잉
+  name: "한대길",     // 아이디 아래 굵은 이름
+  category: "목수",  // 프로필 사진 아래 작은 글씨 (본명, 소속 등). 필요 없으면 비워 두기
+  bio1: "깊은 산골 거주.", bio2: "낮엔 밭일과 나무하기, 밤엔 애들 재우기.", bio3: "호랑이 두 마리랑 삽니다. 🐯🐯",   // 소개 세 줄
+
+  profileImage: "images/profile.jpg",
+
+  // 스토리. closeFriends: true 면 초록 '친한 친구' 표시, shade: true 면 위쪽을 살짝 어둡게(UI 잘 보이게)
+  stories: [
+    { image: "images/story1.jpg", time: "5시간", closeFriends: false, text: { text: "선물이라며.", x: 70, y: 50, size: 3.8, color: "#e0313a", bold: true, bg: "rgba(255,255,255,.92)" } },
+    { image: "images/story2.jpg", time: "4시간", closeFriends: false, shade: true, text: { text: "호랑이들 첫 마을 나들이\n출발", x: 42, y: 90, size: 3.6 } },
+    { image: "images/story3.jpg", time: "3시간", closeFriends: false, shade: true },
+    { image: "images/story4.jpg", time: "2시간", closeFriends: false, shade: true, text: { text: "뽀시래기즈", x: 50, y: 86, size: 3.6 } },
+    { image: "images/story5.jpg", time: "1시간", closeFriends: true, text: { text: "처음 뵙는 분\n집밥 얻어먹는 중", x: 50, y: 47, size: 3.6 } }
+  ],
+
+  // 하이라이트. images 순서대로 넘어가요
+  highlights: [
+    { title: "[주황하트]랑아[주황하트]", cover: "images/hl_ranga_cover.png",
+      images: ["images/hl_ranga1.jpg","images/hl_ranga2.jpg","images/hl_ranga3.jpg","images/hl_ranga4.jpg","images/hl_ranga5.jpg","images/hl_ranga6.jpg"],
+      // 장마다 얹는 글. x·y: 화면 가로·세로 위치(%), w: 글 그림 크기, text+size: 직접 쓴 글
+      texts: [
+        { src: "images/hl_ranga1_text.png", x: 50,   y: 72,   w: 5.96 },
+        { src: "images/hl_ranga2_text.png", x: 50.5, y: 76,   w: 23.74 },
+        { src: "images/hl_ranga3_text.png", x: 50.1, y: 80.5, w: 37.86 },
+        { src: "images/hl_ranga4_text.png", x: 50,   y: 83,   w: 16.48 },
+        { src: "images/hl_ranga5_text.png", x: 60.7, y: 37,   w: 18.34 },
+        { text: "애들 원래 이렇게\n가벼운가요??", x: 50, y: 80, size: 3.6, bg: true }   // bg: true면 글 뒤 검은 배경, bg: "색"이면 그 색 배경
+      ],
+      zooms: [0, 0, 1.15, 0, 0, 0] },   // 장마다 그림 확대 배율(0 = 그대로)
+    { title: "[흰하트]호야[흰하트]", cover: "images/hl_hoya_cover.png",
+      images: ["images/hl_hoya1.jpg","images/hl_hoya2.jpg","images/hl_hoya3.jpg","images/hl_hoya4.jpg","images/hl_hoya5.jpg","images/hl_hoya6.jpg"],
+      texts: [
+        { text: "??? 시즌2", x: 50, y: 25, size: 3.6 },
+        { text: "아내가 밥 짓는다더니\n이러고 있더라", x: 50, y: 85, size: 3.6 },
+        { text: "경계심 푸는 법 좀\n알려주세요 급함", x: 60, y: 17, size: 3.6, bg: true },
+        { text: "경계심 원인이\n여기 있었어...", x: 50, y: 91, size: 3.6 },
+        null,
+        { text: "산신님 고마워요", x: 50, y: 82, size: 3.6 }
+      ] },
+    { title: "[노란하트]은향이[노란하트]", cover: "images/hl_eunhyang_cover.png",
+      images: ["images/hl_eunhyang1.jpg","images/hl_eunhyang2.jpg","images/hl_eunhyang3.jpg","images/hl_eunhyang4.jpg"],
+      texts: [
+        { text: "제 아내임", x: 50, y: 82, size: 3.6 },
+        { text: "어릴 때 ㅎㅎ", x: 50, y: 75, size: 3.6 },
+        { text: "자다 깬 은향이", x: 50, y: 20, size: 3.6 },
+        { text: "육아 동지 오늘도 수고했어", x: 50, y: 18, size: 3.6 }
+      ] }
+  ],
+
+  // 피드 3개. 첫 번째가 맨 왼쪽 칸(가장 최신). 누르면 이 순서대로 위에서 아래로 스크롤
+  feed: [
+    { image: "images/feed1.jpg", location: "", likes: "83", time: "2일 전", caption: "더욱 행복한 가족이 될 수 있게 노력할게", tags: "#가족 #행복하자",
+      comments: [ ["eunhyang.e", "[하트]"], ["ranga_tiger", "아빠 무쌩겨써ㅓ"] ] },   // [댓글 단 아이디, 댓글 내용]
+    { image: "images/feed2.jpg", location: "", likes: "30", time: "1년 전", caption: "날씨가 꽤나 좋았던 날", tags: "#이사왔음 #[카메라]",
+      comments: [ ["eunhyang.e", "너 이거 지붕 위에 올라가서 찍었어??"], ["dolsoe_kim", "대길아 우리 언제 보냐"] ] },
+    { image: "images/feed3.jpg", location: "", likes: "92", time: "3년 전", caption: "결혼했습니다. 축하해 주러 오신 모든 분들 감사드립니다.", tags: "#결혼 #장기연애",
+      comments: [ ["dolsoe_kim", "축하한다 야 나중에 밥 한번 같이 먹자"], ["mansu.park", "대길이 장가가는 날이 오네 ㅋㅋ 축하한다"] ] }
+  ],
+
+  // 발표 모드(키보드 P) 왼쪽 설명글. 화면마다 바뀜. <b>굵게</b> 사용 가능
+  present: {
+    profile:   { kick: "예시작 · 호랑이 들어와요", title: "한대길의 인스타 프로필",
+                 points: ["<b>아이디·이름·직업</b>: daegil.han / 한대길 / 목수", "<b>소개 세 줄</b>로 캐릭터의 일상과 성격을 압축", "<b>팔로워·팔로잉</b> 숫자도 캐릭터의 인간관계를 보여 주는 장치"] },
+    story:     { kick: "스토리", title: "캐릭터는 여가 시간에 무엇을 할까?",
+                 points: ["활동 조건: 스토리 2개, <b>여가 시간</b>을 주제로", "<b>전체 공개</b>와 <b>친한 친구</b> 중 누구에게 보여 줄지도 캐릭터 해석", "사진 한 장에 <b>짧은 한 줄</b>이면 충분, 캐릭터가 그 순간 할 법한 말로"] },
+    highlights: [
+      { kick: "하이라이트 · 랑아", title: "캐릭터가 소중히 여기는 것", points: ["하이라이트는 프로필에 <b>고정</b>해 두는 스토리 모음 (0~3개, 선택)", "주황 호랑이 <b>랑아</b>와의 일상을 모아 둠", "캡션 하나에도 대길의 <b>말투</b>가 드러나게"] },
+      { kick: "하이라이트 · 호야", title: "가족이 되어 가는 과정", points: ["흰 호랑이 <b>호야</b>가 마음을 여는 이야기", "<b>경계심</b>에서 <b>웃음</b>으로 이어지는 순서", "장면 순서만 바꿔도 이야기가 생김"] },
+      { kick: "하이라이트 · 은향이", title: "캐릭터의 가장 가까운 사람", points: ["아내 <b>최은향</b>을 보는 대길의 시선", "어릴 때부터 지금까지, 관계의 시간을 담음", "<b>인물 관계</b>를 SNS 형식으로 표현"] }
+    ],
+    feed: [
+      { kick: "피드 · 세계관 속 캐릭터의 역할", title: "가족을 지키는 가장", points: ["첫 칸은 꼭 <b>세계관 속 캐릭터의 역할</b>", "직업뿐 아니라 이야기 속 <b>기능</b>(조력자, 보호자 등)도 역할", "댓글로 다른 인물과의 <b>관계</b>까지 보여 줌"] },
+      { kick: "피드", title: "이사 온 날", points: ["나머지 두 칸은 <b>자유 주제</b>", "해시태그·댓글로 <b>상황과 주변 인물</b>을 설명", "올린 시간(1년 전)으로 <b>이야기 순서</b>를 만듦"] },
+      { kick: "피드", title: "작품 속 장면을 내 게시물로", points: ["작품에서 <b>기억에 남는 장면</b>을 골라 캐릭터가 직접 올린 사진처럼", "<b>캡션</b>은 캐릭터의 말투로, <b>댓글</b>은 그 장면에 있던 인물의 목소리로", "결혼, 이사, 가족: 피드 세 칸이 <b>하나의 서사</b>"] }
+    ]
+  }
+};
+/* ========================================================= */
+
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function img(src,label,spec,cls){
+  return `<div class="img ${cls||''}"><div class="lbl"><b>${label}</b>${spec}</div>${src?`<img src="${esc(src)}" alt="" onerror="this.remove()">`:''}</div>`;
+}
+// 글 속 [하트] [카메라] [주황하트] [흰하트] [노란하트] 는 아이폰 모양 이모지 그림으로 바뀜
+const EMO={'하트':['heart.svg','❤️'],'카메라':['camera.svg','📷'],'주황하트':['heart_orange.svg','🧡'],'흰하트':['heart_white.svg','🤍'],'노란하트':['heart_yellow.svg','💛']};
+const emo=h=>h.replace(/\[(하트|카메라|주황하트|흰하트|노란하트)\]/g,(m,k)=>`<img class="emo" src="images/${EMO[k][0]}" alt="${EMO[k][1]}">`);
+const tx=(v,c)=>`<span class="tx ${c||''}">${esc(v)}</span>`;
+
+document.querySelectorAll('[data-t]').forEach(el=>el.textContent=CONFIG[el.dataset.t]||'');
+$('avatar').innerHTML=img(CONFIG.profileImage,'프로필','1080×1080','tiny');
+$('navme').innerHTML=img(CONFIG.profileImage,'','','tiny');
+$('sMini').innerHTML=img(CONFIG.profileImage,'','','tiny');
+if(CONFIG.stories.length&&CONFIG.stories.every(s=>s.closeFriends))$('avbtn').classList.add('cfring');
+if(!CONFIG.stories.length)$('avbtn').classList.add('seen');
+
+$('hls').innerHTML=CONFIG.highlights.map((h,i)=>`<button class="hl" data-hl="${i}"><div class="c">${img(h.cover,'표지','1080²','tiny')}</div>${emo(tx(h.title,'s'))}</button>`).join('');
+$('grid').innerHTML=CONFIG.feed.map((p,i)=>`<button data-post="${i}" aria-label="게시물 ${i+1}">${img(p.image,'피드 '+(i+1),'1080×1440<br>(3:4)')}</button>`).join('');
+
+/* 스토리 */
+let hold=false;
+let seq=[],idx=0,timer=null,start=0,dur=5000,paused=false,elapsed=0,fromProfile=false;
+function openStory(list,prof){if(!list.length)return;seq=list;idx=0;fromProfile=prof;$('story').classList.add('open');$('story').setAttribute('aria-hidden','false');show();}
+function closeStory(){cancelAnimationFrame(timer);$('story').classList.remove('open');$('story').setAttribute('aria-hidden','true');}
+// 글 위치: x·y는 화면 기준 %(가운데 기준), w는 글 그림 너비(화면 높이 대비 %), size는 글자 크기(화면 높이 대비 %)
+function capHTML(t){if(!t)return'';const pos=`left:${t.x}%;top:${t.y}%;`;
+  return t.src?`<img class="stext" src="${esc(t.src)}" alt="" style="${pos}width:${t.w}cqh">`:`<div class="stxt${t.bg?' bg':''}" style="${pos}font-size:${t.size||4}cqh;${t.color?'color:'+t.color+';':''}${t.bold?'font-weight:700;':''}">${t.bg?esc(t.text).split('\n').map(l=>`<span${typeof t.bg==="string"?` style="background:${t.bg}"`:""}>${l}</span>`).join('<br>'):esc(t.text)}</div>`;}
+function show(){
+  const s=seq[idx];
+  $('sArt').innerHTML=s.image?`<div class="sbg" style="background-image:url('${esc(s.image)}')"></div><img class="sfg" src="${esc(s.image)}" alt="" style="${s.zoom?'transform:scale('+s.zoom+')':''}" onload="if(this.naturalHeight/this.naturalWidth>1.7)this.classList.add('full')">`+(s.shade?'<div class="sshade"></div>':'')+capHTML(s.text):img('',s.label,'','dark');
+  $('sName').innerHTML=s.hlTitle!=null?emo(esc(s.hlTitle)):esc(CONFIG.id||'');
+  $('sMini').innerHTML=img(s.hlTitle!=null?s.cover:CONFIG.profileImage,'','','tiny');
+  $('sTime').textContent=s.hlTitle!=null?'':(s.time||'');
+  $('sBadge').innerHTML=s.closeFriends?'<span class="cfb">★ 친한 친구</span>':'';
+  $('sBars').innerHTML=seq.map((_,i)=>`<i><b style="width:${i<idx?100:0}%"></b></i>`).join('');
+  elapsed=0;start=performance.now();cancelAnimationFrame(timer);tick();
+}
+function tick(){timer=requestAnimationFrame(now=>{if(!(paused||hold))elapsed=now-start;else start=now-elapsed;const pct=Math.min(100,elapsed/dur*100);const bar=$('sBars').children[idx];if(bar)bar.firstChild.style.width=pct+'%';if(pct>=100)next(true);else tick();});}
+function next(auto){if(idx<seq.length-1){idx++;show();}else if(auto){idx=0;show();setHold(true);}else closeStory();}
+function prev(){if(idx>0)idx--;show();}
+$('avbtn').onclick=()=>openStory(CONFIG.stories.map((s,i)=>({...s,label:'스토리 '+(i+1)})),true);
+$('hls').onclick=e=>{const b=e.target.closest('[data-hl]');if(!b)return;const h=CONFIG.highlights[b.dataset.hl];openStory((h.images||[]).map((im,k)=>({image:im,text:(h.texts||[])[k]||null,zoom:(h.zooms||[])[k]||0,hlTitle:h.title||'',cover:h.cover,label:'하이라이트'})),false);};
+$('tapR').onclick=next;$('tapL').onclick=prev;$('sClose').onclick=closeStory;
+$('story').addEventListener('pointerdown',()=>paused=true);
+['pointerup','pointerleave'].forEach(ev=>$('story').addEventListener(ev,()=>paused=false));
+document.addEventListener('keydown',e=>{if(!$('story').classList.contains('open'))return;if(e.key==='ArrowRight')next();if(e.key==='ArrowLeft')prev();if(e.key==='Escape')closeStory();});
+
+/* 게시물 */
+const HEART='<svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 017-2.6A4 4 0 0119 10c0 5.6-7 10-7 10z" fill="none" stroke="#111" stroke-width="1.9"/></svg>';
+function postHTML(p,i){
+  return `<article class="pitem" id="post${i}"><div class="uh"><div class="mini"><div>${img(CONFIG.profileImage,'','','tiny')}</div></div><div>${tx(CONFIG.id,'m')}<small>${p.location?esc(p.location):''}</small></div><span class="more">⋯</span></div>
+  <div class="pimg">${img(p.image,'피드 '+(i+1),'1080×1080 (1:1)')}</div>
+  <div class="acts"><button class="likeBtn like-on" aria-label="좋아요">${HEART}</button><svg viewBox="0 0 24 24" style="transform:scaleY(-1)"><path d="M20 12a8 8 0 11-3.2-6.4L20 4l-1 4.2A8 8 0 0120 12z" fill="none" stroke="#111" stroke-width="1.9" stroke-linejoin="round"/></svg><svg viewBox="0 0 24 24"><path d="M21 4L3 11l7 2 2 7z" fill="none" stroke="#111" stroke-width="1.9" stroke-linejoin="round"/></svg><svg class="bm" viewBox="0 0 24 24"><path d="M6 3h12v18l-6-5-6 5z" fill="none" stroke="#111" stroke-width="1.9" stroke-linejoin="round"/></svg></div>
+  <div class="likes">좋아요 ${tx(p.likes,'s')}개</div>
+  <div class="cap"><b>${tx(CONFIG.id,'m')}</b>${tx(p.caption)}${p.tags?'<br>':''}<span class="tags">${emo(esc(p.tags))}</span></div>
+  ${p.comments.map(c=>`<div class="cm"><b>${tx(c[0],'s')}</b>${emo(tx(c[1]))}</div>`).join('')}
+  <div class="when">${esc(p.time)}</div></article>`;}
+function openPost(i){
+  $('postBody').innerHTML=CONFIG.feed.map(postHTML).join('');
+  $('postBody').querySelectorAll('.likeBtn').forEach(b=>b.onclick=e=>e.currentTarget.classList.toggle('like-on'));
+  $('postId').textContent=CONFIG.id||'';
+  $('post').classList.add('open');$('post').setAttribute('aria-hidden','false');
+  const t=$('post'+i);$('postBody').scrollTop=t?t.offsetTop:0;}
+$('grid').onclick=e=>{const b=e.target.closest('[data-post]');if(b)openPost(+b.dataset.post);};
+$('postBack').onclick=()=>{$('post').classList.remove('open');$('post').setAttribute('aria-hidden','true');};
+
+/* 스페이스바: 스토리·하이라이트 자동 넘김 멈춤/다시 재생 */
+function setHold(v){hold=v;$('story').classList.toggle('held',v);}
+document.addEventListener('keydown',e=>{if(e.code!=='Space'&&e.key!==' ')return;if(!$('story').classList.contains('open'))return;e.preventDefault();setHold(!hold);},true);
+document.addEventListener('keyup',e=>{if(e.code==='Space'&&$('story').classList.contains('open'))e.preventDefault();},true);
+
+/* 숫자 키 바로가기: 1 스토리, 2~4 하이라이트, 5~7 피드 / Esc 메인 */
+document.addEventListener('keydown',e=>{
+  const m=/^(?:Digit|Numpad)([1-7])$/.exec(e.code||'');if(!m)return;e.preventDefault();const n=+m[1];
+  if($('story').classList.contains('open'))closeStory();
+  if($('post').classList.contains('open'))$('postBack').click();
+  if(n===1)$('avbtn').click();
+  else if(n<=4){const b=document.querySelector('[data-hl="'+(n-2)+'"]');if(b)b.click();}
+  else openPost(n-5);
+});
+
+/* 게시물 화면: ← ↑ 이전 게시물, → ↓ 다음 게시물, Esc 뒤로 */
+document.addEventListener('keydown',e=>{
+  if(!$('post').classList.contains('open')||$('story').classList.contains('open'))return;
+  if(e.key==='Escape'){$('postBack').click();return;}
+  const d=(e.key==='ArrowRight'||e.key==='ArrowDown')?1:(e.key==='ArrowLeft'||e.key==='ArrowUp')?-1:0;if(!d)return;
+  e.preventDefault();const bd=$('postBody'),its=[...bd.querySelectorAll('.pitem')];
+  let cur=0;its.forEach((el,i)=>{if(el.offsetTop<=bd.scrollTop+8)cur=i;});if(bd.scrollTop+bd.clientHeight>=bd.scrollHeight-4)cur=its.length-1;
+  const t=its[Math.max(0,Math.min(its.length-1,cur+d))];if(t)bd.scrollTo({top:t.offsetTop,behavior:'smooth'});
+});
+
+/* 발표 모드: 키보드 P 로 켜고 끔 */
+let presentOn=false, ctxKey='', curCtx='profile';
+function setCtx(k){if(!presentOn||k===ctxKey)return;ctxKey=k;const P=CONFIG.present||{};let d=null;
+  if(k==='profile')d=P.profile;else if(k==='story')d=P.story;else if(k.startsWith('hl'))d=(P.highlights||[])[+k.slice(2)];else if(k.startsWith('feed'))d=(P.feed||[])[+k.slice(4)];
+  $('pnote').innerHTML=d?`<div class="fade"><span class="kick">${esc(d.kick||'')}</span><h2>${esc(d.title||'')}</h2><ul>${(d.points||[]).map(t=>`<li>${t}</li>`).join('')}</ul></div>`:'';}
+function ctx(k){curCtx=k;setCtx(k);}
+document.addEventListener('keydown',e=>{if(e.code==='KeyP'||e.key==='p'||e.key==='P'||e.key==='ㅔ'){presentOn=!presentOn;document.body.classList.toggle('present',presentOn);ctxKey='';if(presentOn)setCtx(curCtx);}});
+/* 화면 전환에 맞춰 설명 바꾸기 */
+const _openStory=openStory, _closeStory=closeStory, _openPost=openPost;
+openStory=function(list,prof){_openStory(list,prof);if(prof)ctx('story');};
+closeStory=function(){_closeStory();setHold(false);ctx('profile');};
+openPost=function(i){_openPost(i);ctx('feed'+i);};
+$('hls').addEventListener('click',e=>{const b=e.target.closest('[data-hl]');if(b)ctx('hl'+b.dataset.hl);});
+$('postBack').addEventListener('click',()=>ctx('profile'));
+$('postBody').addEventListener('scroll',()=>{const bd=$('postBody');let best=0;bd.querySelectorAll('.pitem').forEach((el,i)=>{if(el.offsetTop-bd.scrollTop<bd.clientHeight*0.45)best=i;});ctx('feed'+best);});
+</script>
