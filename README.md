@@ -4,7 +4,7 @@
 ## [온라인 사용법] 
 
 1. https://liberali0.github.io/sns.profile.example.works.presentation/
-2. 위 링크에 접속 합니다.
+   - 위 링크에 접속 합니다.
 
 ## [오프라인 사용법]
 
