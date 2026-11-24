@@ -2,8 +2,7 @@
 ### 크롬에서 F11 을 누르면 전체 화면이 됩니다. 전체화면을 기준으로 제작한 웹입니다.
 
 ## [온라인 사용법] 
-
-1. https://liberali0.github.io/sns.profile.example.works.presentation/
+   - https://liberali0.github.io/sns.profile.example.works.presentation/
    - 위 링크에 접속 합니다.
 
 ## [오프라인 사용법]
